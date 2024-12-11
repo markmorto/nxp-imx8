@@ -135,7 +135,7 @@ MCIMX8MP-EVK:
 	 CPU Revision:          rev1.1
 	 Board Revision:        MCIMX8M-EVK SCH-46370 REV B1, 700-46370 REV B1
 	 BootLoader:            U-Boot
-	 BootLoader Version:    U-Boot 2023.04-lf_v2023.04+gaf7d004eaf
+	 BootLoader Version:    U-Boot 2024.04-lf_v2024.04+gde16f4f1+p0
 
 4.2 Specify boot medium
 -----------------------
