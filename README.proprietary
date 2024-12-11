@@ -337,7 +337,7 @@ INFO: 0.00784314: 835 suit
 2.4 WIFI module 88W8997(Only iMX8MP)
 ------------------------------------
 
-MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8mp-nxp-bsp:"
+MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8mp-nxp-bsp:imx-generic-bsp:"
 IMAGE_INSTALL:append = " kernel-module-nxp-wlan connman firmware-nxp-wifi-nxp8997-pcie firmware-nxp-wifi-nxp8997-sdio"
 
 CUSTOMER_RECIPES:fsl-bsp-release += "imx-m7-demos"
