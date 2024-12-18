@@ -18,7 +18,7 @@ IMAGE_INSTALL:append = " imx-m7-demos"
 
 bitbake wrlinux-image-std
 
-Add bootargs 'mcore_clk clk-imx8mp.mcore_booted'
+Add bootargs 'clk-imx8mp.mcore_booted'
 
 echo imx8mp_m7_TCM_rpmsg_lite_str_echo_rtos.elf > /sys/devices/platform/imx8mp-cm7/remoteproc/remoteproc0/firmware
 
