@@ -169,6 +169,8 @@ for MCIMX8MQ-EVK board, $kernel_addr="0x40480000", $fdt_addr="0x44000000"
 
 Note: for MCIMX8QM-MEK board, $kernel_addr="0x8a0000000", $fdt_addr="0x8d0000000"
 	$console_port = "ttyLP0,115200"
+      for MCIMX8MQ-EVK board, $kernel_addr="0x40480000", $fdt_addr="0x44000000"
+	$console_port = "ttymxc0,115200"
       for MCIMX8MP-EVK board, $kernel_addr="0x40400000", $fdt_addr="0x43000000"
         $console_port = "ttymxc1,115200"
       The kernel image will become larger if more kernel code is compiled into kernel image.
