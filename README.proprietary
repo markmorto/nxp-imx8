@@ -1,4 +1,4 @@
-1.0 common configuration
+1.0 Common Configuration
 ------------------------
 # All private packages of imx require the following configuration
 BB_NO_NETWORK = '0'
@@ -9,7 +9,7 @@ BSP_NXP_DERIVED:append:nxp-imx8  = " nxp-imx8"
 DISTROOVERRIDES:nxp-imx8 = "fsl fslc"
 CUSTOMER_RECIPES:fsl-bsp-release += 'imx-m7-demos'
 
-2.0 M7-core test
+2.0 M7-Core Test
 ----------------
 
 MACHINEOVERRIDES:prepend = "mx8mp-nxp-bsp:"
@@ -26,13 +26,19 @@ echo start > /sys/devices/platform/imx8mp-cm7/remoteproc/remoteproc0/state
 
 cat /sys/devices/platform/imx8mp-cm7/remoteproc/remoteproc0/state
 
+
 2.1 GPU
 -------
-Because of the licesen issue, nxp-imx8 layer doesn't integrate imx8's GPU(GC7000Lite) or VPU
-hardware acceleration related packages into WRlinux product. So, if customer wants
-to run hardware graphic feature. Detail steps as below:
 
-2.1.1 The common configurations for all boards:
+Due to license restrictions for the GPU (GC7000Lite) and VPU hardware acceleration-related 
+packages, they are not enabled in Wind River Linux by default. Users requiring graphics 
+support must review the license and explicitly add support to your system configuration for 
+it. Wind River does not take responsibility for this content.
+
+2.1.1 Common configuration Requirements for All Boards
+------------------------------------------------------
+
+To enable hardware graphics features, include the following in your project configuration.
 
 PREFERRED_PROVIDER_virtual/egl:imxgpu        ?= "imx-gpu-viv"
 PREFERRED_PROVIDER_virtual/libgl:imxgpu    ?= "mesa-gl"
@@ -175,15 +181,18 @@ CUSTOMER_RECIPES:openembedded-layer += 'imagemagick'
 CUSTOMER_RECIPES:openembedded-layer += 'libtinyxml2'
 CUSTOMER_RECIPES:fsl-bsp-release += 'isp-imx'
 
-2.1.2 The specific configurations for i.MX8QM or i.MX8MQ:
----------------------------------------------------------
+
+2.1.2 i.MX8QM or i.MX8MQ Configuration Requirements
+---------------------------------------------------
 
 MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8:mx8m:mx8qm:mx8mq:imxdrm:imxdpu:imxdcss:imxvpu:imxvpuhantro:imxgpu:imxgpu2d:imxgpu3d:mx8-nxp-bsp:imx-nxp-sdk:use-nxp-bsp:mx8mq-nxp-bsp:mx8qm-nxp-bsp:imxvulkan:mx8-generic-bsp:mx8qm-generic-bsp:"
+
 IMAGE_INSTALL:append = " assimp devil imx-gpu-viv imx-gpu-sdk imx-gpu-viv-demos weston weston-init imx-dpu-g2d imx-vpu-hantro imx-gpu-apitrace weston-xwayland imx-g2d-samples gstreamer1.0 gstreamer1.0-plugins-base  gstreamer1.0-plugins-good imx-gst1.0-plugin gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly gstreamer1.0-libav"
 
 PREFERRED_PROVIDER_virtual/libg2d:imxdpu     ?= "imx-dpu-g2d"
 
-2.1.3 VPU test
+
+2.1.3 VPU Test
 --------------
 
 For imx8mq:
@@ -192,13 +201,16 @@ For imx8mq:
     vpudec:
 	gst-launch-1.0 filesrc location=test.mp4 typefind=true ! video/quicktime ! aiurdemux ! queue max-size-time=0 ! vpudec ! autovideosink
 
+
 For imx8qm:
 -----------
 
-Note: Please refer to the '2.6 VPU firmware(MX8QM)' section to add the firmware.
+Note: Requires VPU firmware configuration update. Refer to the '2.6 VPU Firmware Configuration 
+      Requirements (MX8QM)' section for additional configuration details.
 
     v4l2h264enc:
 	gst-launch-1.0 v4l2src device=/dev/video3 num-buffers=300 ! video/x-raw,format=NV12,width=1920,height=1080,framerate=30/1 ! v4l2h264enc ! h264parse ! avimux ! filesink location=output.yuv
+
     v4l2h264dec:
 	gst-launch-1.0 filesrc location=sample-5s.mp4 ! qtdemux name=d d.video_0 ! queue ! h264parse ! v4l2h264dec ! imxvideoconvert_g2d ! queue ! waylandsink
 
@@ -208,8 +220,9 @@ Note: Please refer to the '2.6 VPU firmware(MX8QM)' section to add the firmware.
     h265dec:
 	gst-launch-1.0 filesrc location=1718886721_sample_1920x1080.hevc ! queue ! h265parse ! v4l2h265dec ! imxvideoconvert_g2d ! queue ! waylandsink
 
-2.1.4 The specific configurations for i.MX8MP:
-----------------------------------------------
+
+2.1.4 i.MX8MP Configuration Requirements
+----------------------------------------
 
 MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8:mx8m:imxdrm:imxvpu:imxvpuhantro:imxgpu:imxgpu2d:imxgpu3d:mx8-nxp-bsp:imx-nxp-sdk:use-nxp-bsp:imxvulkan:mx8-generic-bsp:imx-generic-bsp:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp:"
 
@@ -217,7 +230,8 @@ IMAGE_INSTALL:append = " assimp devil imx-gpu-viv imx-gpu-sdk imx-gpu-viv-demos 
 
 PREFERRED_PROVIDER_virtual/libg2d:imxgpu2d   ?= "imx-gpu-g2d"
 
-2.1.4.1 iMX8MP isp os08a20
+
+2.1.4.1 iMX8MP ISP os08a20
 --------------------------
 
 Mode0: 1080p linear:
@@ -237,6 +251,7 @@ Mode 3: 4K HDR:
 	sed -i "s/^mode = .*$/mode = 3/" /opt/imx8-isp/bin/Sensor0_Entry.cfg
 	gst-launch-1.0 -v v4l2src device=/dev/video3 ! "video/x-raw,format=YUY2,width=3840,height=2160" ! queue ! waylandsink
 
+
 2.1.4.1 iMX8MP VPU
 ------------------
 
@@ -244,25 +259,29 @@ Note: When using Encode to record video, please use the ov5640 camera or os08a20
 
     vpuenc_h264:
 	gst-launch-1.0 v4l2src device=/dev/video3 num-buffers=300 ! video/x-raw,format=NV12,width=1920,height=1080,framerate=30/1 ! vpuenc_h264 ! h264parse ! mp4mux ! filesink location=video.mp4
+
     vpuenc_hevc:
 	gst-launch-1.0 v4l2src device=/dev/video3 num-buffers=300 ! video/x-raw,format=NV12,width=1920,height=1080,framerate=30/1 ! vpuenc_hevc ! queue ! h265parse ! filesink location=video.hevc
 
     H264dec:
 	gst-launch-1.0 filesrc location=file_example_MP4_480_1_5MG.mp4 ! qtdemux name=d d.video_0 ! queue ! h264parse ! vpudec ! imxvideoconvert_g2d ! queue ! waylandsink
+
     Vp8dec:
 	gst-launch-1.0 filesrc location=big-buck-bunny_trailer.webm ! matroskademux ! vpudec ! imxvideoconvert_g2d ! queue ! waylandsink
+
     H265dec:
 	gst-launch-1.0 filesrc location=1718886721_sample_1920x1080.hevc ! queue ! h265parse ! vpudec ! imxvideoconvert_g2d ! queue ! waylandsink
 
-2.2 machine learning
+
+2.2 Machine Learning
 --------------------
 
-Add the following steps on the basis of graphic:
+Perform the following steps to enable graphics-based machine learning.
 
 <1> Append the following packages to IMAGE_INSTALL:
 
-On the basis of the above graphic steps:
 MACHINEOVERRIDES:prepend:nxp-imx8 = "use-nxp-bsp:"
+
 IMAGE_INSTALL:append = " gstreamer1.0 gstreamer1.0-plugins-base  gstreamer1.0-plugins-good tensorflow-lite nnstreamer imx-gst1.0-plugin gstreamer1.0-plugins-bad packagegroup-imx-ml onnxruntime tensorflow-lite-vx-delegate gstreamer1.0-rtsp-server gstreamer1.0-plugins-ugly gstreamer1.0-libav"
 
 <2> Append the following packages to CUSTOMER_RECIPES:
@@ -291,31 +310,32 @@ CUSTOMER_RECIPES:meta-python += 'python3-coloredlogs'
 CUSTOMER_RECIPES:meta-python += 'python3-humanfriendly'
 PREFERRED_VERSION_tensorflow-lite:mx8 = "2.16.2"
 
-<3> Use the command as below to build a xwayland image:
+<3> Run the following command to build an xwayland image:
 
-        bitbake wrlinux-image-std-sato
+    bitbake wrlinux-image-std-sato
 
-<4> downlaod these packeges below:
+<4> Downlaod the following packages.
 
-root:~# wget https://github.com/google-coral/test_data/raw/master/ssd_mobilenet_v2_coco_quant_postprocess.tflite
-root:~# wget https://github.com/google-coral/test_data/raw/master/coco_labels.txt
-root:~# export MODEL=$(pwd)/ssd_mobilenet_v2_coco_quant_postprocess.tflite
-root:~# export LABELS=$(pwd)/coco_labels.txt
+    root:~# wget https://github.com/google-coral/test_data/raw/master/ssd_mobilenet_v2_coco_quant_postprocess.tflite
+    root:~# wget https://github.com/google-coral/test_data/raw/master/coco_labels.txt
+    root:~# export MODEL=$(pwd)/ssd_mobilenet_v2_coco_quant_postprocess.tflite
+    root:~# export LABELS=$(pwd)/coco_labels.txt
 
-<6> Execute the following command:
+<6> Run the following command to build and run the gstreamer pipelines.
 
 gst-launch-1.0 --no-position v4l2src device=/dev/${capture device} ! video/x-raw,width=640,height=480,framerate=30/1 ! tee name=t t. ! queue max-size-buffers=2 leaky=2 ! imxvideoconvert_g2d ! video/x-raw,width=300,height=300,format=RGBA ! videoconvert ! video/x-raw,format=RGB ! tensor_converter ! tensor_filter framework=tensorflow-lite accelerator=true:gpu model=${pwd}/ssd_mobilenet_v2_coco_quant_postprocess.tflite custom=Delegate:NNAPI ! tensor_decoder mode=bounding_boxes option1=tf-ssd option2=${pwd}/coco_labels.txt option3=0:1:2:3,50 option4=640:480 option5=300:300 ! mix. t. ! queue max-size-buffers=2 ! imxcompositor_g2d name=mix sink_0::zorder=2 sink_1::zorder=1 ! waylandsink
 
-2.3 NPU(only MX8MP)
+
+2.3 NPU (MX8MP only)
 -------------------
 
-Note: Please compile the packages required by chapters 2.1 and 2.2 for testing.
+Note: Before you continue, complete the setup and compile the packages required by chapters 2.1 and 2.2 for testing.
 
 cd /usr/bin/tensorflow-lite-2.16.2/examples#
 
 USE_GPU_INFERENCE=0 ./label_image -m mobilenet_v1_1.0_224_quant.tflite -i grace_hopper.bmp -l labels.txt --external_delegate_path=/usr/lib64/libvx_delegate.so
 
-You can get following messge:
+You should receive the following messge:
 
 INFO: Loaded model mobilenet_v1_1.0_224_quant.tflite
 INFO: resolved reporter
@@ -336,7 +356,8 @@ INFO: 0.0196078: 458 bow tie
 INFO: 0.0117647: 466 bulletproof vest
 INFO: 0.00784314: 835 suit
 
-2.4 WIFI module 88W8997(Only iMX8MP)
+
+2.4 WIFI Module 88W8997 (iMX8MP only)
 ------------------------------------
 
 MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8mp-nxp-bsp:imx-generic-bsp:"
@@ -353,26 +374,30 @@ bitbake wrlinux-image-std
 # kernel startup run
 modprobe moal mod_para=nxp/wifi_mod_para.conf
 
-Execute the following commands to validate the WiFi cards:
+Run the following commands to validate the WiFi cards:
 
-        # ifconfig mlan<idx> up
-        # iw mlan<idx> scan
-        # iw dev mlan<idx> connect <AP essid>
-        # dhclient mlan<idx>
-        # ping <AP address> -i mlan<idx> -c 5
+  # ifconfig mlan<idx> up
+  # iw mlan<idx> scan
+  # iw dev mlan<idx> connect <AP essid>
+  # dhclient mlan<idx>
+  # ping <AP address> -i mlan<idx> -c 5
 
-2.5 Build Bootloader
---------------------
 
-Because of license limitation, the NXP imx8 bootloader is not supported on WRLinux product.
-But the necessary recipe files of building bootloader have been integrated into WRLinux product. In this way,
-the customers can build bootloader for NXP imx8 platform based on WRLinux product by themselves.
-To build bootloader image for NXP imx8 platform, it only needs to add below contents in local.conf file,
-and then build WRLinux image as usual.
+2.5 Build the Bootloader
+------------------------
+
+Due to license restrictions for the NXP imx8 bootloader and related packages, they are not enabled 
+by default with Wind River Linux. However, the necessary recipe files for building the bootloader 
+are included with Wind River Linux. This allows you to accept the license and build the bootloader 
+for the NXP imx8 platform based on Wind River Linux.
+
+To build bootloader image, add the following contents to your local.conf file and build Wind River 
+Linux image.
 
 Prepare the bootloader image imx-boot-nxp-imx8-${machine}.bin-flash
 
-2.5.1 Common configurations for all boards
+
+2.5.1 Common Configurations for All Boards
 ------------------------------------------
 
 ACCEPT_FSL_EULA = "1"
@@ -389,8 +414,9 @@ CUSTOMER_RECIPES:fsl-bsp-release += 'imx-atf'
 CUSTOMER_RECIPES:fsl-bsp-release += 'imx-boot'
 CUSTOMER_RECIPES:fsl-bsp-release += 'imx-mkimage'
 
-2.5.2 Specific configurations for imx8qm
-----------------------------------------
+
+2.5.2 imx8qm Configuration Requirements 
+---------------------------------------
 
 MACHINEOVERRIDES:prepend = "mx8qm:mx8qm-nxp-bsp:mx8-generic-bsp:mx8qm-generic-bsp:"
 
@@ -436,8 +462,9 @@ IMXBOOT_TARGETS = \
 CUSTOMER_RECIPES:meta-arm += 'arm-ffa-user arm-tstee libts'
 IMAGE_INSTALL:append = " libts"
 
-2.5.3 Specific configurations for imx8mq
-----------------------------------------
+
+2.5.3 imx8mq Configuration Requirements 
+---------------------------------------
 
 MACHINEOVERRIDES:prepend = "mx8m:mx8mq:mx8mq-nxp-bsp:mx8m-generic-bsp:mx8mq-generic-bsp:"
 
@@ -488,8 +515,9 @@ IMX_BOOT_SEEK = "33"
 
 OPTEE_BIN_EXT = "8mq"
 
-2.5.4 Specific configurations for imx8mp
-----------------------------------------
+
+2.5.4 imx8mp Configuration Requirements 
+---------------------------------------
 
 MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8m:mx8m-generic-bsp:mx8m-nxp-bsp:mx8mp-generic-bsp:mx8mp-nxp-bsp:mx8mp:"
 
@@ -547,8 +575,9 @@ IMXBOOT_TARGETS_BASENAME = "flash_evk"
 
 IMX_DEFAULT_BSP = "nxp"
 
-2.6 VPU firmware(MX8QM)
------------------------
+
+2.6 VPU Firmware Configuration Requirements (MX8QM)
+---------------------------------------------------
 
 MACHINEOVERRIDES:prepend:nxp-imx8 = "mx8qm-nxp-bsp:"
 IMAGE_INSTALL:append = " firmware-imx-vpu-amphion"
